@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep1 Scene 3</title><link rel="stylesheet" href="style.css"></head>
+<body><svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="lib.js"></script>
+<script>
+/* SCENE 3 — INT. YOUR KITCHEN (0:14–0:19)
+   Your hand pulls open a cupboard: a few cans, crackers, half a bag of rice. Fridge hums.
+   The countdown clock slides into the HUD. */
+
+function can(p, x, y, w = 70, h = 96, label = "#7b3a2a", icon = "spoon") {
+  el("rect", { x: x - w / 2, y: y - h, width: w, height: h, fill: "#8e8a83", stroke: "#000", "stroke-width": 5 }, p);
+  el("rect", { x: x - w / 2, y: y - h * 0.78, width: w, height: h * 0.56, fill: label }, p);
+  el("ellipse", { cx: x, cy: y - h, rx: w / 2, ry: 10, fill: "#b9b4ab", stroke: "#000", "stroke-width": 5 }, p);
+  if (icon === "spoon") el("path", { d: `M${x - 14},${y - h * 0.5} l28,0 M${x - 22},${y - h * 0.5} a6,8 0 1 0 0.1,0`, stroke: "#f0d9b0", "stroke-width": 4, fill: "none" }, p);
+  else for (const [dx, dy] of [[-12, -0.55], [8, -0.45], [-2, -0.35]]) el("circle", { cx: x + dx, cy: y + h * dy, r: 5, fill: "#f0d9b0" }, p);
+}
+
+SCENE({
+  number: 3, title: "The Clock", start: 14, duration: 5,
+  hud: { day: "DAY 1", time: "7:43 PM", status: "STATUS: STAY INSIDE", statusAt: 0.1, statusColor: "#ff6b5e", countdown: "FOOD ~9 DAYS · WATER: RUNNING · BATT 100%", countdownAt: 0.9 },
+  captions: [
+    { at: 1.07, text: "“Await further instructions.”", key: "instructions" },
+    { at: 3.35, text: "For how long?", key: "long" },
+  ],
+  draw(root, p, t) {
+    el("rect", { x: 0, y: 0, width: W, height: 1240, fill: C.wall }, p);
+    el("rect", { x: 0, y: 1240, width: W, height: 680, fill: C.floor }, p);
+    // lamp light spilling in from the living room on the left
+    glow(root, p, -80, 760, 1000, C.warm, 0.34);
+    // counter + lower cabinets
+    el("rect", { x: -10, y: 1180, width: 1100, height: 40, fill: "#2a211b", stroke: "#000", "stroke-width": 6 }, p);
+    el("rect", { x: 0, y: 1220, width: 820, height: 420, fill: "#17120f", stroke: "#000", "stroke-width": 6 }, p);
+    for (const x of [200, 410, 620]) el("line", { x1: x, y1: 1220, x2: x, y2: 1640, stroke: "#000", "stroke-width": 6 }, p);
+    // fridge (right) with hum lines
+    el("rect", { x: 840, y: 330, width: 260, height: 1310, rx: 18, fill: "#cfcac0", stroke: "#000", "stroke-width": 8 }, p);
+    el("rect", { x: 840, y: 330, width: 260, height: 1310, rx: 18, fill: "#000", opacity: 0.55 }, p);
+    el("line", { x1: 840, y1: 780, x2: 1100, y2: 780, stroke: "#000", "stroke-width": 6 }, p);
+    el("rect", { x: 866, y: 560, width: 16, height: 150, rx: 8, fill: "#222" }, p);
+    el("rect", { x: 866, y: 830, width: 16, height: 190, rx: 8, fill: "#222" }, p);
+    for (let i = 0; i < 3; i++) {
+      const k = (t * 1.2 + i / 3) % 1;
+      el("path", { d: `M${800 - k * 50},${700 + i * 70} q-10,-14 0,-28 q10,-14 0,-28`, fill: "none", stroke: C.cream, "stroke-width": 5, "stroke-linecap": "round", opacity: 0.55 * (1 - k) }, p);
+    }
+    // upper cupboard
+    const cx = 160, cy = 360, cw = 600, ch = 560;
+    el("rect", { x: cx, y: cy, width: cw, height: ch, fill: "#0e0b09", stroke: "#000", "stroke-width": 8 }, p);
+    // interior (shelf + supplies), lit a little by the lamp
+    el("rect", { x: cx + 14, y: cy + 14, width: cw - 28, height: ch - 28, fill: "#1f1914" }, p);
+    el("rect", { x: cx + 10, y: cy + 280, width: cw - 20, height: 16, fill: "#3a2c20" }, p);
+    // top shelf: cans
+    can(p, 260, cy + 270); can(p, 345, cy + 270, 70, 96, "#2f4a6b", "dots"); can(p, 430, cy + 270);
+    // bottom shelf: crackers box, cans, half bag of rice
+    el("rect", { x: 220, y: cy + 360, width: 150, height: 170, fill: "#d9a441", stroke: "#000", "stroke-width": 5 }, p);
+    for (const [dx, dy] of [[20, 40], [70, 40], [20, 90], [70, 90]]) el("rect", { x: 220 + dx + 10, y: cy + 360 + dy, width: 36, height: 36, fill: "#f2d38a", stroke: "#8a5f1f", "stroke-width": 3 }, p);
+    can(p, 440, cy + 530, 70, 96, "#2f4a6b", "dots"); can(p, 520, cy + 530);
+    el("path", { d: `M590,${cy + 530} L590,${cy + 440} Q600,${cy + 400} 640,${cy + 410} Q690,${cy + 400} 700,${cy + 440} L700,${cy + 530} Z`, fill: "#e8e2d4", stroke: "#000", "stroke-width": 5 }, p);
+    for (let i = 0; i < 7; i++) el("ellipse", { cx: 610 + rnd(i) * 120, cy: cy + 534 + rnd(i + 9) * 8, rx: 5, ry: 3, fill: "#f4efe3" }, p);
+    // doors swing open (pulled by your right hand)
+    const open = ease(seg(t, 0.25, 0.75));
+    const doorW = cw / 2;
+    const lw = doorW * (1 - open * 0.86), rw = doorW * (1 - open * 0.86);
+    el("rect", { x: cx - (doorW - lw) * 0.25, y: cy, width: lw, height: ch, fill: "#2a1f17", stroke: "#000", "stroke-width": 8 }, p);
+    el("rect", { x: cx + cw - rw + (doorW - rw) * 0.25, y: cy, width: rw, height: ch, fill: "#2a1f17", stroke: "#000", "stroke-width": 8 }, p);
+    if (open < 0.2) el("rect", { x: cx + cw / 2 + 16, y: cy + ch / 2 - 40, width: 12, height: 80, rx: 6, fill: "#8a6430" }, p);
+    // right hand: reaches for the handle, pulls, drops away
+    const reach = ease(seg(t, 0.0, 0.25)) * (1 - ease(seg(t, 0.9, 1.5)));
+    const handleX = lerp(cx + cw / 2 + 22, cx + cw + 40, open), handleY = cy + ch / 2;
+    const wx = lerp(980, handleX + 60, reach), wy = lerp(2100, handleY + 150, reach);
+    hand(p, { elbow: [wx + 220, wy + 900], wrist: [wx, wy], dir: -120, pose: open > 0.05 && reach > 0.6 ? "grip" : "open", scale: 1.3 });
+    vignette(root, p, 0.8);
+  },
+});
+</script></body></html>

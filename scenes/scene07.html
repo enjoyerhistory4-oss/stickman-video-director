@@ -1,0 +1,94 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep1 Scene 7</title><link rel="stylesheet" href="style.css"></head>
+<body><svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="lib.js"></script>
+<script>
+/* SCENE 7 — THE WRONG MOMENT (0:45–0:53)
+   Your phone lights up and rings: DEV is calling. Cut to the gap: the Slow One's head snaps
+   toward your window; it takes one step closer. Cut back: your thumb hovers between
+   Decline and Answer. Freeze. */
+
+const RING_AT = 0.2;
+const CUT_TO_STREET = 2.0, SNAP = [2.05, 2.25], GROAN = 2.2, STEP = 3.9;
+const CUT_TO_PHONE = 5.4, FREEZE = 7.4;
+
+function callScreen(t) {
+  const f = (sg, w, h) => {
+    el("rect", { x: 0, y: 0, width: w, height: h, fill: "#14161c" }, sg);
+    el("rect", { x: 0, y: 0, width: w, height: h, fill: linear(root0, [[0, "#2a3346", 1], [1, "#0e1016", 1]]) }, sg);
+    text(sg, "incoming call", { x: w / 2, y: 190, "text-anchor": "middle", "font-family": UI_FONT, "font-size": 38, fill: "#aab3c5" });
+    // avatar: stickman head with a backwards cap (Dev)
+    const ax = w / 2, ay = 400;
+    const ring = 1 + 0.06 * Math.sin(t * Math.PI * 4);
+    el("circle", { cx: ax, cy: ay, r: 150 * ring, fill: "#fff", opacity: 0.08 }, sg);
+    el("circle", { cx: ax, cy: ay, r: 120, fill: "#e9edf5" }, sg);
+    el("circle", { cx: ax, cy: ay + 10, r: 62, fill: "#e9edf5", stroke: "#000", "stroke-width": 9 }, sg);
+    el("path", { d: `M${ax - 62},${ay - 2} Q${ax - 60},${ay - 66} ${ax},${ay - 62} Q${ax + 56},${ay - 60} ${ax + 62},${ay - 6} Z`, fill: "#e0482f", stroke: "#000", "stroke-width": 7 }, sg);
+    el("path", { d: `M${ax - 60},${ay - 6} L${ax - 108},${ay + 6}`, stroke: "#000", "stroke-width": 12, "stroke-linecap": "round" }, sg); // brim pointing back
+    el("path", { d: `M${ax - 20},${ay + 40} q20,14 40,0`, fill: "none", stroke: "#000", "stroke-width": 6, "stroke-linecap": "round" }, sg);
+    text(sg, "DEV", { x: w / 2, y: 660, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 800, "font-size": 104, fill: "#fff" });
+    const dots = ".".repeat(1 + (Math.floor(t * 3) % 3));
+    text(sg, `is calling${dots}`, { x: w / 2 - 150, y: 740, "font-family": UI_FONT, "font-size": 46, fill: "#cfd6e4" });
+    // buttons
+    for (const [bx, col, label, rot] of [[w * 0.27, "#e5484d", "Decline", 135], [w * 0.73, "#30c060", "Answer", 0]]) {
+      el("circle", { cx: bx, cy: 1010, r: 82, fill: col }, sg);
+      const hs = g(sg, `translate(${bx},${1010}) rotate(${rot})`);
+      el("path", { d: "M-34,10 Q-38,-22 -14,-20 L-8,-6 Q-18,0 -14,10 Q0,26 12,20 L22,24 Q20,46 -10,36 Q-34,28 -34,10 Z", fill: "#fff" }, hs);
+      text(sg, label, { x: bx, y: 1140, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 600, "font-size": 38, fill: "#fff" });
+    }
+  };
+  f.statusInk = "#fff";
+  return f;
+}
+let root0 = null;
+
+function phoneShot(root, p, t, { lit = 1, thumb, frozen = false }) {
+  el("rect", { x: 0, y: 0, width: W, height: H, fill: "#07080b" }, p);
+  glow(root, p, 540, 900, 1100, "#9fb6ff", 0.22 * lit);
+  const ringing = !frozen;
+  const [sx, sy] = ringing ? jitter(t, 5, 30, 4) : [0, 0];
+  const view = g(p, `translate(${sx},${sy})`);
+  if (ringing) {
+    soundWaves(view, 540, 880, t, { spread: 4.4, size: 1.4, color: "#cfe0ff" });
+    buzzMarks(view, 100, 880, 600, t); buzzMarks(view, 980, 880, 600, t + 0.06);
+  }
+  phone(root, view, { x: 540, y: 880, w: 800, h: 1300, screen: lit > 0 ? callScreen(t) : null, dark: lit <= 0, battery: 100, plug: true, clock: "7:53", screenGlow: "#9fb6ff", glowOpacity: 0.2 * lit });
+  holdHand(view, { side: "L", edgeX: 140, gripY: 1420 });
+  holdHand(view, { side: "R", edgeX: 940, gripY: 1440, thumb });
+}
+
+SCENE({
+  number: 7, title: "The Wrong Moment", start: 45, duration: 8,
+  hud: { day: "DAY 1", time: "7:53 PM", status: "STATUS: NOISE! NOISE! NOISE!", statusAt: RING_AT, statusColor: "#ff6b5e" },
+  captions: [
+    { at: 2.55, text: "Dev. Of course it's Dev.", key: "Dev" },
+    { at: 4.86, text: "And it heard that.", key: "heard" },
+  ],
+  draw(root, p, t) {
+    root0 = root;
+    if (t < CUT_TO_STREET) {
+      phoneShot(root, p, t, { lit: t >= RING_AT ? 1 : 0, thumb: null });
+    } else if (t < CUT_TO_PHONE) {
+      const face = ease(seg(t, SNAP[0], SNAP[1]));
+      const step = ease(seg(t, STEP, STEP + 0.6));
+      const groan = Math.sin(Math.PI * seg(t, GROAN, GROAN + 1.6));
+      blindsGap(root, p, {
+        top: 688, bottom: 1192, bend: 76, press: 1, phoneLight: 0.6 + 0.4 * Math.sin(t * 10),
+        view: { zoom: lerp(1.45, 1.6, step), cx: 510, cy: lerp(192, 180, step) },
+        streetOpts: { zombie: { x: lerp(500, 520, step), ground: 420 + step * 14, scale: 0.9 + step * 0.08, headUp: 1, face, mouth: groan, walk: 0.25 } },
+      });
+      soundWaves(p, 540, 1700, t, { spread: 3, size: 1, color: "#cfe0ff" });
+    } else {
+      // thumb hovers between Decline and Answer, then freezes
+      const tt = Math.min(t, FREEZE);
+      const k = 0.5 + 0.5 * Math.sin((tt - CUT_TO_PHONE) * 3.2);
+      const declineX = 140 + 36 + 0.27 * 728, answerX = 140 + 36 + 0.73 * 728;
+      const thumb = [lerp(declineX + 40, answerX - 40, k), 880 - 650 + 36 + 1010 + 60];
+      phoneShot(root, p, tt, { lit: 1, thumb, frozen: t >= FREEZE });
+      if (t >= FREEZE) el("rect", { x: 0, y: 0, width: W, height: H, fill: "#000", opacity: 0.18 }, p);
+    }
+    vignette(root, p, 0.75);
+  },
+});
+</script></body></html>

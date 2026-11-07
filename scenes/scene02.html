@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep1 Scene 2</title><link rel="stylesheet" href="style.css"></head>
+<body><svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="lib.js"></script>
+<script>
+/* SCENE 2 — THE ALERT (0:06–0:14)
+   Full-screen phone closeup: the screen turns solid red and buzzes; your thumb taps OK at 6.6s. */
+
+const ALERT_AT = 0.15;   // screen goes red
+const BUZZ_END = 3.2;    // alarm + buzz length (matches the sound mix)
+const TAP_AT = 6.6;      // thumb taps OK (tap sound at 0:12.6)
+
+function alertScreen(t) {
+  const f = (sg, w, h) => {
+    const pulse = 0.85 + 0.15 * Math.sin(t * Math.PI * 4) * (t < BUZZ_END ? 1 : 0.2);
+    el("rect", { x: 0, y: 0, width: w, height: h, fill: "#c4161c", opacity: pulse }, sg);
+    el("rect", { x: 0, y: 0, width: w, height: h, fill: "#7a0b0f", opacity: 1 - pulse }, sg);
+    // warning triangle
+    const tx = w / 2, ty = 210;
+    el("path", { d: `M${tx},${ty - 80} L${tx + 92},${ty + 76} L${tx - 92},${ty + 76} Z`, fill: "#fff", stroke: "#fff", "stroke-width": 14, "stroke-linejoin": "round" }, sg);
+    el("rect", { x: tx - 9, y: ty - 30, width: 18, height: 64, rx: 8, fill: "#c4161c" }, sg);
+    el("circle", { cx: tx, cy: ty + 52, r: 11, fill: "#c4161c" }, sg);
+    text(sg, "EMERGENCY ALERT", { x: w / 2, y: 370, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 800, "font-size": 50, fill: "#fff", "letter-spacing": 3 }, sg);
+    el("line", { x1: 60, y1: 410, x2: w - 60, y2: 410, stroke: "#fff", "stroke-width": 3, opacity: 0.6 }, sg);
+    text(sg, "STAY INSIDE.", { x: w / 2, y: 560, "text-anchor": "middle", "font-family": CAPTION_FONT, "font-size": 128, fill: "#fff" });
+    text(sg, "DO NOT LEAVE.", { x: w / 2, y: 700, "text-anchor": "middle", "font-family": CAPTION_FONT, "font-size": 128, fill: "#fff" });
+    for (const [i, line] of ["Lock doors. Stay quiet.", "Await further instructions."].entries())
+      text(sg, line, { x: w / 2, y: 820 + i * 58, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 500, "font-size": 40, fill: "#ffe5e5" });
+    // OK button
+    const pressed = t >= TAP_AT && t < TAP_AT + 0.35;
+    const done = t >= TAP_AT + 0.35;
+    el("rect", { x: w / 2 - 170, y: 1010, width: 340, height: 104, rx: 52, fill: pressed || done ? "#fff" : "none", stroke: "#fff", "stroke-width": 6 }, sg);
+    text(sg, "OK", { x: w / 2, y: 1080, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 800, "font-size": 50, fill: pressed || done ? "#c4161c" : "#fff" });
+  };
+  f.statusInk = "#fff";
+  return f;
+}
+
+function plainFeed(sg, w, h) {
+  for (let i = 0; i < 4; i++) {
+    el("rect", { x: 30, y: 120 + i * 330, width: w - 60, height: 300, rx: 22, fill: "#e3e6ee" }, sg);
+  }
+}
+
+SCENE({
+  number: 2, title: "The Alert", start: 6, duration: 8,
+  hud: (t) => ({ day: "DAY 1", time: "7:42 PM", status: t < ALERT_AT ? "STATUS: ALL QUIET" : "STATUS: EMERGENCY ALERT", statusAt: t < ALERT_AT ? -5 : ALERT_AT, statusColor: t < ALERT_AT ? C.cream : "#ff6b5e" }),
+  captions: [{ at: 3.54, text: "That's not a test.", key: "test" }],
+  draw(root, p, t) {
+    // red light from the screen floods the dark room
+    el("rect", { x: 0, y: 0, width: W, height: H, fill: "#0b0708" }, p);
+    if (t >= ALERT_AT) glow(root, p, 540, 900, 1100, "#ff2a2a", 0.28 + 0.08 * Math.sin(t * 12) * (t < BUZZ_END ? 1 : 0));
+    // hands jolt when the alert hits, then the phone buzzes
+    const shakeAmt = t < ALERT_AT ? 0 : t < ALERT_AT + 0.25 ? 26 : t < BUZZ_END ? 10 * (1 - (t - ALERT_AT) / BUZZ_END) + 4 : 0;
+    const [sx, sy] = jitter(t, shakeAmt, 30, 2);
+    const jolt = t >= ALERT_AT ? -40 * Math.sin(Math.PI * seg(t, ALERT_AT, ALERT_AT + 0.3)) : 0;
+    const view = g(p, `translate(${sx},${sy + jolt})`);
+    const ph = { x: 540, y: 880, w: 800, h: 1300 };
+    const scr = t < ALERT_AT ? plainFeed : alertScreen(t);
+    phone(root, view, { ...ph, screen: scr, battery: 100, plug: true, clock: "7:42", screenGlow: t < ALERT_AT ? "#cfe0ff" : "#ff3030", glowOpacity: 0.22 });
+    if (t >= ALERT_AT && t < BUZZ_END) buzzMarks(view, 540 - 440, 880, 600, t), buzzMarks(view, 540 + 440, 880, 600, t + 0.06);
+    // hands: left grips, right thumb moves to OK and taps it
+    holdHand(view, { side: "L", edgeX: 140, gripY: 1420 });
+    const okX = 540, okY = 880 - 650 + 36 + 1062; // button centre in stage space
+    const reach = ease(seg(t, 5.6, TAP_AT));
+    const rest = [820, 1380];
+    const press = t >= TAP_AT && t < TAP_AT + 0.35 ? 10 : 0;
+    const tip = [lerp(rest[0], okX + 60, reach), lerp(rest[1], okY + press, reach)];
+    holdHand(view, { side: "R", edgeX: 940, gripY: 1440, thumb: tip, pressed: t >= TAP_AT && t < TAP_AT + 0.35 });
+    vignette(root, p, 0.7);
+  },
+});
+</script></body></html>

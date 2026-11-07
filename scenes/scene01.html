@@ -1,0 +1,70 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep1 Scene 1</title><link rel="stylesheet" href="style.css"></head>
+<body><svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="lib.js"></script>
+<script>
+/* SCENE 1 — INT. YOUR LIVING ROOM — EVENING (0:00–0:06)
+   First-person from the couch: your hands scroll a plain feed. Lamp on, blinds closed, door on the right. */
+
+function livingRoom(root, p, t) {
+  el("rect", { x: 0, y: 0, width: W, height: 1020, fill: C.wall }, p);
+  el("rect", { x: 0, y: 1020, width: W, height: 900, fill: C.floor }, p);
+  // lamp (the single warm light)
+  glow(root, p, 170, 520, 760, C.warm, 0.32);
+  el("line", { x1: 170, y1: 560, x2: 170, y2: 1000, stroke: "#000", "stroke-width": 10 }, p);
+  el("ellipse", { cx: 170, cy: 1004, rx: 60, ry: 12, fill: "#000" }, p);
+  el("path", { d: "M80,560 L260,560 L222,440 L118,440 Z", fill: "#e9a659" }, p);
+  el("path", { d: "M80,560 L260,560", stroke: "#a86a2c", "stroke-width": 6 }, p);
+  // window with closed blinds, streetlight leaking through the slats
+  el("rect", { x: 430, y: 300, width: 330, height: 470, fill: "#1a1714", stroke: "#000", "stroke-width": 12 }, p);
+  for (let y = 318; y < 760; y += 26) {
+    el("rect", { x: 440, y, width: 310, height: 20, fill: "#262019" }, p);
+    el("line", { x1: 440, y1: y + 22, x2: 750, y2: y + 22, stroke: "#6f86a8", "stroke-width": 2, opacity: 0.35 }, p);
+  }
+  // front door (right)
+  el("rect", { x: 860, y: 260, width: 240, height: 760, fill: "#1b130e", stroke: "#000", "stroke-width": 12 }, p);
+  el("circle", { cx: 900, cy: 660, r: 13, fill: "#8a6430" }, p);
+  // couch arm in the foreground
+  el("path", { d: "M-20,1500 Q60,1420 160,1440 L170,1920 L-20,1920 Z", fill: "#1d1416" }, p);
+  el("path", { d: "M-20,1500 Q60,1420 160,1440", fill: "none", stroke: C.rim, "stroke-width": 4, opacity: 0.4 }, p);
+}
+
+function feed(scrollY) {
+  const f = (sg, w, h) => {
+    const cardH = 300, gap = 30;
+    for (let i = -1; i < 7; i++) {
+      const y = 120 + i * (cardH + gap) - (scrollY % (cardH + gap));
+      el("rect", { x: 28, y, width: w - 56, height: cardH, rx: 22, fill: "#e3e6ee" }, sg);
+      el("circle", { cx: 80, cy: y + 52, r: 28, fill: "#c3c8d4" }, sg);
+      el("rect", { x: 124, y: y + 36, width: 180, height: 16, rx: 8, fill: "#c3c8d4" }, sg);
+      el("rect", { x: 124, y: y + 62, width: 110, height: 12, rx: 6, fill: "#d2d6e0" }, sg);
+      el("rect", { x: 52, y: y + 104, width: w - 104, height: 168, rx: 14, fill: "#cfd3dd" }, sg);
+    }
+    el("rect", { x: 0, y: 0, width: w, height: 70, fill: C.screen }, sg);
+  };
+  return f;
+}
+
+SCENE({
+  number: 1, title: "Couch, Ordinary Evening", start: 0, duration: 6,
+  hud: { day: "DAY 1", time: "7:42 PM", status: "STATUS: ALL QUIET", statusAt: 0.3 },
+  captions: [
+    { at: 1.04, text: "Just another night.", key: "night" },
+    { at: 2.93, text: "You're home alone.", key: "alone" },
+  ],
+  draw(root, p, t) {
+    livingRoom(root, p, t);
+    // scroll flicks at the tap sounds (0.6, 2.4, 4.6, 5.3)
+    let scroll = 0;
+    for (const tap of [0.6, 2.4, 4.6, 5.3]) scroll += 330 * easeOut(seg(t, tap, tap + 0.35));
+    const thumbFlick = [0.6, 2.4, 4.6, 5.3].reduce((m, tap) => Math.max(m, Math.sin(Math.PI * seg(t, tap - 0.05, tap + 0.3))), 0);
+    const ph = { x: 540, y: 1080, w: 480, h: 900, rot: 0 };
+    phone(root, p, { ...ph, screen: feed(scroll), battery: 100, plug: true, clock: "7:42" });
+    // left hand grips the phone's left edge (band on the left wrist); right thumb scrolls
+    holdHand(p, { side: "L", edgeX: 300, gripY: 1360 });
+    holdHand(p, { side: "R", edgeX: 780, gripY: 1380, thumb: [640 - thumbFlick * 10, 1300 - thumbFlick * 110] });
+    vignette(root, p, 0.8);
+  },
+});
+</script></body></html>

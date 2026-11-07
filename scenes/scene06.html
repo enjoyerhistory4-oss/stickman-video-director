@@ -1,0 +1,42 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep1 Scene 6</title><link rel="stylesheet" href="style.css"></head>
+<body><svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="lib.js"></script>
+<script>
+/* SCENE 6 — EXT. THE STREET — SEEN THROUGH THE BLINDS (0:35–0:45)
+   A grey stickman shuffles into the streetlight and stops, head down. Slow push-in.
+   Its head lifts: X eyes. Your fingers tighten on the slats. */
+
+const STEPS = [0.3, 1.6, 2.9, 4.2];   // dragging steps (match the sound mix)
+const STOP = 4.6, PUSH_START = 4.6, HEAD_UP = [6.0, 7.0], TIGHTEN = [7.4, 7.9];
+
+SCENE({
+  number: 6, title: "The First Slow One", start: 35, duration: 10,
+  hud: (t) => ({ day: "DAY 1", time: "7:52 PM", status: t < 1.0 ? "STATUS: CHECKING OUTSIDE" : "STATUS: MOVEMENT OUTSIDE", statusAt: t < 1.0 ? -5 : 1.0, statusColor: t < 1.0 ? C.cream : "#ff6b5e" }),
+  captions: [
+    { at: 1.53, text: "That's not a neighbor.", key: "neighbor" },
+    { at: 4.53, text: "It's listening.", key: "listening" },
+  ],
+  draw(root, p, t) {
+    // walk: progress jumps forward on each dragging step
+    let prog = 0;
+    for (const s of STEPS) prog += ease(seg(t, s, s + 0.7));
+    const x = lerp(-80, 500, prog / STEPS.length);
+    const moving = t < STOP && STEPS.some((s) => t >= s && t < s + 0.7);
+    const walk = (t * 0.75) % 1;
+    const headUp = ease(seg(t, HEAD_UP[0], HEAD_UP[1]));
+    const push = ease(seg(t, PUSH_START, 10));
+    const zoom = lerp(1, 1.45, push);
+    const press = ease(seg(t, TIGHTEN[0], TIGHTEN[1]));
+    // heartbeat: a faint pulse in the vignette from 3.5s on (matches the sound mix)
+    const beat = t > 3.5 ? Math.pow(Math.max(0, Math.sin(t * Math.PI * 2 * 1.15)), 8) : 0;
+    blindsGap(root, p, {
+      top: 700 - press * 12, bottom: 1180 + press * 12, bend: 50 + press * 26, press,
+      view: { zoom, cx: lerp(540, 510, push), cy: lerp(260, 192, push) },
+      streetOpts: { zombie: { x, ground: 420, scale: 0.9, walk, moving, headUp, face: headUp * 0.4 } },
+    });
+    vignette(root, p, 0.75 + beat * 0.15);
+  },
+});
+</script></body></html>

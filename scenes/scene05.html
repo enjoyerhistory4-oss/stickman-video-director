@@ -1,0 +1,49 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep1 Scene 5</title><link rel="stylesheet" href="style.css"></head>
+<body><svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="lib.js"></script>
+<script>
+/* SCENE 5 — INT. AT THE WINDOW — NIGHT FALLING (0:27–0:35)
+   Two fingers pull two blind slats apart. Cut to the gap (letterbox): an empty street,
+   a streetlight, parked cars, a lit window across the street. Too empty. */
+
+const PULL_START = 0.35, PULL_END = 0.9, CUT = 1.3;
+
+SCENE({
+  number: 5, title: "The Blinds", start: 27, duration: 8,
+  hud: { day: "DAY 1", time: "7:51 PM", status: "STATUS: CHECKING OUTSIDE", statusAt: 0.1 },
+  captions: [
+    { at: 1.54, text: "No cars.", key: "cars" },
+    { at: 3.11, text: "No people.", key: "people" },
+    { at: 4.70, text: "Nothing.", key: "nothing" },
+  ],
+  draw(root, p, t) {
+    if (t < CUT) {
+      // the closed blinds, lit warm from the lamp behind you
+      el("rect", { x: 0, y: 0, width: W, height: H, fill: C.wall }, p);
+      glow(root, p, 120, 1500, 1200, C.warm, 0.3);
+      el("rect", { x: 70, y: 180, width: 940, height: 1360, fill: "#000" }, p);
+      const pull = ease(seg(t, PULL_START, PULL_END));
+      const gapY = 860;
+      for (let y = 200; y < 1520; y += 46) {
+        const d = y - gapY;
+        const near = Math.abs(d) < 70 ? 1 : 0;
+        const bend = near * pull * 46 * Math.sign(d || -1);
+        el("path", { d: `M90,${y} Q540,${y + bend} 990,${y}`, fill: "none", stroke: "#2c241c", "stroke-width": 40 }, p);
+        el("path", { d: `M90,${y - 18} Q540,${y - 18 + bend} 990,${y - 18}`, fill: "none", stroke: "#5a4026", "stroke-width": 3, opacity: 0.7 }, p);
+        el("line", { x1: 90, y1: y + 22, x2: 990, y2: y + 22, stroke: "#6f86a8", "stroke-width": 3, opacity: 0.3 }, p);
+      }
+      if (pull > 0) el("ellipse", { cx: 540, cy: gapY, rx: 300, ry: 44 * pull, fill: "#0c1220" }, p);
+      // right hand: index + middle finger come up to the slats
+      const up = ease(seg(t, 0.0, PULL_START));
+      const wy = lerp(2200, 1240, up);
+      hand(p, { elbow: [760, wy + 800], wrist: [600, wy], dir: -95, pose: "two", scale: 1.6 });
+    } else {
+      // through the gap (letterbox)
+      blindsGap(root, p, { top: 700, bottom: 1180, bend: 50, view: { zoom: 1, cx: 540, cy: 260 } });
+    }
+    vignette(root, p, 0.75);
+  },
+});
+</script></body></html>

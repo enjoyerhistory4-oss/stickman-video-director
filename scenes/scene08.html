@@ -1,0 +1,91 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ep1 Scene 8</title><link rel="stylesheet" href="style.css"></head>
+<body><svg id="stage" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="lib.js"></script>
+<script>
+/* SCENE 8 — CLIFFHANGER: YOUR CHOICE (0:53–1:00)
+   Split screen: top, the Slow One staring at your window; bottom, your thumb over the
+   ringing phone. Hard cut to black at 4.5s (0:57.5) with the A/B choice card. */
+
+const CUT = 4.5;
+
+function callMini(t) {
+  const f = (sg, w, h) => {
+    el("rect", { x: 0, y: 0, width: w, height: h, fill: "#161a24" }, sg);
+    text(sg, "DEV", { x: w / 2, y: 220, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 800, "font-size": 96, fill: "#fff" });
+    text(sg, "is calling...", { x: w / 2, y: 285, "text-anchor": "middle", "font-family": UI_FONT, "font-size": 42, fill: "#cfd6e4" });
+    for (const [bx, col, label] of [[w * 0.27, "#e5484d", "Decline"], [w * 0.73, "#30c060", "Answer"]]) {
+      el("circle", { cx: bx, cy: 420, r: 78, fill: col }, sg);
+      text(sg, label, { x: bx, y: 546, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 600, "font-size": 36, fill: "#fff" });
+    }
+  };
+  f.statusInk = "#fff";
+  return f;
+}
+
+function choiceCard(p, t) {
+  const k = (a) => easeOut(seg(t, a, a + 0.3));
+  const cg = g(p);
+  el("rect", { x: 0, y: 0, width: W, height: H, fill: "#000" }, cg);
+  const tg = g(cg, null, { opacity: k(CUT + 0.1) });
+  text(tg, "WHAT DO YOU DO?", { x: W / 2, y: 330, "text-anchor": "middle", "font-family": CAPTION_FONT, "font-size": 104, fill: "#fff" });
+  const opt = (y, letter, title, lines, at) => {
+    const og = g(cg, `translate(${lerp(-60, 0, k(at))},0)`, { opacity: k(at) });
+    el("rect", { x: 70, y, width: 940, height: 420, rx: 28, fill: "#121214", stroke: "#2a2a2e", "stroke-width": 4 }, og);
+    el("circle", { cx: 170, cy: y + 110, r: 70, fill: C.yellow }, og);
+    text(og, letter, { x: 170, y: y + 145, "text-anchor": "middle", "font-family": CAPTION_FONT, "font-size": 100, fill: "#000" });
+    text(og, title, { x: 270, y: y + 146, "font-family": CAPTION_FONT, "font-size": 104, fill: "#fff" });
+    lines.forEach((l, i) => text(og, l, { x: 120, y: y + 260 + i * 56, "font-family": UI_FONT, "font-size": 42, fill: "#d8d8de" }));
+  };
+  opt(450, "A", "DECLINE.", ["Kill the sound now. Drop to the floor.", "Stay silent."], CUT + 0.35);
+  opt(920, "B", "ANSWER.", ["Stop the ringing. Whisper to Dev. Find", "out what’s happening out there."], CUT + 0.6);
+  const cg2 = g(cg, null, { opacity: k(CUT + 0.95) });
+  // speech bubble icon + call to action
+  el("path", { d: "M300,1478 h70 a18,18 0 0 1 18,18 v40 a18,18 0 0 1 -18,18 h-36 l-22,20 v-20 h-12 a18,18 0 0 1 -18,-18 v-40 a18,18 0 0 1 18,-18 z", fill: C.yellow }, cg2);
+  text(cg2, "Comment A or B.", { x: 420, y: 1540, "font-family": HUD_FONT, "font-size": 56, fill: C.yellow });
+  const cg3 = g(cg, null, { opacity: k(CUT + 1.3) });
+  el("line", { x1: 240, y1: 1690, x2: 840, y2: 1690, stroke: "#333", "stroke-width": 3 }, cg3);
+  text(cg3, "STAY INSIDE · Episode 2: “Inventory”", { x: W / 2, y: 1770, "text-anchor": "middle", "font-family": HUD_FONT, "font-size": 40, fill: C.cream });
+}
+
+SCENE({
+  number: 8, title: "Your Choice", start: 53, duration: 7,
+  hud: { day: "DAY 1", time: "7:53 PM", status: "STATUS: IT HEARD YOU", statusAt: 0.1, statusColor: "#ff6b5e" },
+  captions: [
+    { at: 0.63, text: "It's still ringing.", key: "ringing" },
+    { at: 2.44, text: "What do you do?", key: "you" },
+  ],
+  captionOpts: { hideAfter: CUT },
+  draw(root, p, t) {
+    if (t >= CUT) { choiceCard(p, t); return { hideHud: true, hideCaptions: true }; }
+    // top half: the Slow One, staring at your window
+    const top = g(p);
+    const topClip = clip(root, (c) => el("rect", { x: 0, y: 0, width: W, height: 950 }, c));
+    top.setAttribute("clip-path", topClip);
+    const topView = g(top, `translate(0,-480)`);
+    blindsGap(root, topView, {
+      top: 700, bottom: 1240, bend: 70, press: 1, phoneLight: 0.5 + 0.5 * Math.sin(t * 10), fingers: false,
+      view: { zoom: 1.45 + t * 0.02, cx: 525, cy: 172 },
+      streetOpts: { zombie: { x: 520, ground: 434, scale: 0.98, headUp: 1, face: 1, walk: 0.25 } },
+    });
+    // bottom half: your thumb over the ringing phone
+    const bot = g(p);
+    const botClip = clip(root, (c) => el("rect", { x: 0, y: 970, width: W, height: 950 }, c));
+    bot.setAttribute("clip-path", botClip);
+    el("rect", { x: 0, y: 970, width: W, height: 950, fill: "#07080b" }, bot);
+    glow(root, bot, 540, 1500, 800, "#9fb6ff", 0.25);
+    const [sx, sy] = jitter(t, 4, 30, 8);
+    const pv = g(bot, `translate(${sx},${sy})`);
+    soundWaves(pv, 540, 1480, t, { spread: 4.2, size: 1.2, color: "#cfe0ff" });
+    phone(root, pv, { x: 540, y: 1560, w: 780, h: 1100, screen: callMini(t), battery: 100, plug: true, clock: "7:53", screenGlow: "#9fb6ff", glowOpacity: 0.15 });
+    const k = 0.5 + 0.5 * Math.sin(t * 2.6);
+    const thumb = [lerp(380, 700, k), 1560 - 550 + 35 + 420 + 70];
+    holdHand(pv, { side: "L", edgeX: 150, gripY: 1880 });
+    holdHand(pv, { side: "R", edgeX: 930, gripY: 1890, thumb });
+    // divider
+    el("rect", { x: 0, y: 950, width: W, height: 20, fill: "#000" }, p);
+    vignette(root, p, 0.6);
+  },
+});
+</script></body></html>

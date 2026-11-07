@@ -1,0 +1,7 @@
+@font-face { font-family: "Anton"; src: url("fonts/Anton.woff2") format("woff2"); }
+@font-face { font-family: "Special Elite"; src: url("fonts/SpecialElite.woff2") format("woff2"); }
+
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+/* Scales to fit any window for preview; renders at exactly 1080x1920 in a 1080x1920 viewport. */
+#stage { display: block; width: 100vw; height: 100vh; }
+#measure { position: absolute; width: 0; height: 0; visibility: hidden; }
