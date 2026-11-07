@@ -1,0 +1,10 @@
+{
+  "engine": "kokoro-onnx (Kokoro-82M v1.0)",
+  "voice": "af_heart",
+  "speed": 0.9,
+  "lang": "en-us",
+  "sample_rate": 24000,
+  "line_gap_seconds": 0.6,
+  "beat_pause_seconds": 1.2,
+  "note": "Series narrator for STAY INSIDE. Use these exact settings for every episode."
+}
