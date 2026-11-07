@@ -56,7 +56,7 @@ SCENE({
     { at: 0.63, text: "It's still ringing.", key: "ringing" },
     { at: 2.44, text: "What do you do?", key: "you" },
   ],
-  captionOpts: { hideAfter: CUT },
+  captionOpts: { hideAfter: CUT, y: 920 }, // above the divider; the phone fills the bottom half
   draw(root, p, t) {
     if (t >= CUT) { choiceCard(p, t); return { hideHud: true, hideCaptions: true }; }
     // top half: the Slow One, staring at your window

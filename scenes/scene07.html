@@ -32,10 +32,10 @@ function callScreen(t) {
     text(sg, `is calling${dots}`, { x: w / 2 - 150, y: 740, "font-family": UI_FONT, "font-size": 46, fill: "#cfd6e4" });
     // buttons
     for (const [bx, col, label, rot] of [[w * 0.27, "#e5484d", "Decline", 135], [w * 0.73, "#30c060", "Answer", 0]]) {
-      el("circle", { cx: bx, cy: 1010, r: 82, fill: col }, sg);
-      const hs = g(sg, `translate(${bx},${1010}) rotate(${rot})`);
+      el("circle", { cx: bx, cy: 900, r: 78, fill: col }, sg);
+      const hs = g(sg, `translate(${bx},${900}) rotate(${rot})`);
       el("path", { d: "M-34,10 Q-38,-22 -14,-20 L-8,-6 Q-18,0 -14,10 Q0,26 12,20 L22,24 Q20,46 -10,36 Q-34,28 -34,10 Z", fill: "#fff" }, hs);
-      text(sg, label, { x: bx, y: 1140, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 600, "font-size": 38, fill: "#fff" });
+      text(sg, label, { x: bx, y: 1022, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 600, "font-size": 38, fill: "#fff" });
     }
   };
   f.statusInk = "#fff";
@@ -84,7 +84,7 @@ SCENE({
       const tt = Math.min(t, FREEZE);
       const k = 0.5 + 0.5 * Math.sin((tt - CUT_TO_PHONE) * 3.2);
       const declineX = 140 + 36 + 0.27 * 728, answerX = 140 + 36 + 0.73 * 728;
-      const thumb = [lerp(declineX + 40, answerX - 40, k), 880 - 650 + 36 + 1010 + 60];
+      const thumb = [lerp(declineX + 40, answerX - 40, k), 880 - 650 + 36 + 900 + 60];
       phoneShot(root, p, tt, { lit: 1, thumb, frozen: t >= FREEZE });
       if (t >= FREEZE) el("rect", { x: 0, y: 0, width: W, height: H, fill: "#000", opacity: 0.18 }, p);
     }

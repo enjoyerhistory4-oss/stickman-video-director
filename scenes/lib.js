@@ -404,7 +404,7 @@ function measureWord(str, size) {
   _measure.textContent = str;
   return _measure.getComputedTextLength() * (size / 100);
 }
-function caption(parent, t, lines, { y = 1700, size = 118, maxWidth = 960, hideAfter = Infinity } = {}) {
+function caption(parent, t, lines, { y = 1480, size = 118, maxWidth = 960, hideAfter = Infinity } = {}) {
   // lines: [{ at, text, key }] — each shows from its time until the next one starts
   let cur = null;
   for (const l of lines) if (t >= l.at && t < hideAfter) cur = l;
