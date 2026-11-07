@@ -387,8 +387,8 @@ function hud(parent, t, globalT, { day = "DAY 1", time = "7:42 PM", status = "",
   }
   if (countdown && countdownAt !== null && t >= countdownAt) {
     const k = easeOut(seg(t, countdownAt, countdownAt + 0.45));
-    const cg = g(hg, `translate(${lerp(-760, 0, k)},0)`);
-    el("rect", { x: x - 6, y: y + 114, width: 720, height: 50, rx: 6, fill: "#000", opacity: 0.55 }, cg);
+    const cg = g(hg, `translate(${lerp(-860, 0, k)},0)`);
+    el("rect", { x: x - 6, y: y + 114, width: 820, height: 50, rx: 6, fill: "#000", opacity: 0.55 }, cg);
     text(cg, countdown, { ...base, fill: C.yellow, x: x + 6, y: y + 148, "font-size": 30 });
   }
   return hg;

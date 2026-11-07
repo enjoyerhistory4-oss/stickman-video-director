@@ -13,11 +13,11 @@ const CUT = 4.5;
 function callMini(t) {
   const f = (sg, w, h) => {
     el("rect", { x: 0, y: 0, width: w, height: h, fill: "#161a24" }, sg);
-    text(sg, "DEV", { x: w / 2, y: 220, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 800, "font-size": 96, fill: "#fff" });
-    text(sg, "is calling...", { x: w / 2, y: 285, "text-anchor": "middle", "font-family": UI_FONT, "font-size": 42, fill: "#cfd6e4" });
+    text(sg, "DEV", { x: w / 2, y: 180, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 800, "font-size": 96, fill: "#fff" });
+    text(sg, "is calling...", { x: w / 2, y: 240, "text-anchor": "middle", "font-family": UI_FONT, "font-size": 42, fill: "#cfd6e4" });
     for (const [bx, col, label] of [[w * 0.27, "#e5484d", "Decline"], [w * 0.73, "#30c060", "Answer"]]) {
-      el("circle", { cx: bx, cy: 420, r: 78, fill: col }, sg);
-      text(sg, label, { x: bx, y: 546, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 600, "font-size": 36, fill: "#fff" });
+      el("circle", { cx: bx, cy: 340, r: 70, fill: col }, sg);
+      text(sg, label, { x: bx, y: 450, "text-anchor": "middle", "font-family": UI_FONT, "font-weight": 600, "font-size": 36, fill: "#fff" });
     }
   };
   f.statusInk = "#fff";
@@ -80,7 +80,7 @@ SCENE({
     soundWaves(pv, 540, 1480, t, { spread: 4.2, size: 1.2, color: "#cfe0ff" });
     phone(root, pv, { x: 540, y: 1560, w: 780, h: 1100, screen: callMini(t), battery: 100, plug: true, clock: "7:53", screenGlow: "#9fb6ff", glowOpacity: 0.15 });
     const k = 0.5 + 0.5 * Math.sin(t * 2.6);
-    const thumb = [lerp(380, 700, k), 1560 - 550 + 35 + 420 + 70];
+    const thumb = [lerp(380, 700, k), 1560 - 550 + 35 + 340 + 70];
     holdHand(pv, { side: "L", edgeX: 150, gripY: 1880 });
     holdHand(pv, { side: "R", edgeX: 930, gripY: 1890, thumb });
     // divider
